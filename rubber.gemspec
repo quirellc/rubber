@@ -8,7 +8,7 @@ Gem::Specification.new do |s|
   s.name = "rubber"
   s.version     = Rubber::VERSION.dup
   s.platform    = Gem::Platform::RUBY
-  s.required_ruby_version = '>= 1.9.3'
+  s.required_ruby_version = '>= 2.4.0'
   s.authors = ["Matt Conway", "Kevin Menard"]
   s.email       = ["matt@conwaysplace.com", "nirvdrum@gmail.com"]
   s.homepage = "https://github.com/rubber/rubber"
@@ -28,7 +28,7 @@ Gem::Specification.new do |s|
   s.require_paths = ["lib"]
 
   s.add_dependency 'capistrano', '~> 2.12'
-  s.add_dependency 'net-ssh', '~> 2.6'
+  s.add_dependency 'net-ssh', '>= 2.6'
   s.add_dependency 'thor'
   s.add_dependency 'clamp'
   s.add_dependency 'fog', '< 2.0'
