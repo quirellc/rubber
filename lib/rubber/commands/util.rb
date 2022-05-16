@@ -16,6 +16,9 @@ module Rubber
       option ["-d", "--directory"],
              "DIRECTORY",
              "The directory containing files to be rotated\nRequired"
+      option ['-D', '--date'],
+             'DATE',
+             'The date (YYYYMMDD) to use for the log file\nDefaults to yesterday.'
       option ["-p", "--pattern"],
              "PATTERN",
              "The glob pattern for matching files\n",
@@ -25,6 +28,14 @@ module Rubber
              "The number of days to keep rotated files\n",
              :default => 7,
              &Proc.new {|a| Integer(a)}
+      option ['-t', '--timestamp'],
+             :flag,
+             'TIMESTAMP',
+             'Use the current timestamp to ensure uniqueness in the rotated name'
+
+      def default_date
+        (Date.today - 1).strftime('%Y%m%d')
+      end
 
       def execute
         signal_usage_error "DIRECTORY is required" unless directory
@@ -33,7 +44,12 @@ module Rubber
         log_file_glob = pattern
         log_file_age = age
 
-        rotated_date = (Date.today - 1).strftime('%Y%m%d')
+        rotated_date = if timestamp?
+          "#{date}-#{Time.now.to_i}"
+        else
+          date
+        end
+
         puts "Rotating logfiles located at: #{log_src_dir}/#{log_file_glob}"
         Dir["#{log_src_dir}/#{log_file_glob}"].each do |logfile|
           rotated_file = "#{logfile}.#{rotated_date}"
