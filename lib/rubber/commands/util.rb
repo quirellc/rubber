@@ -16,9 +16,6 @@ module Rubber
       option ["-d", "--directory"],
              "DIRECTORY",
              "The directory containing files to be rotated\nRequired"
-      option ['-D', '--date'],
-             'DATE',
-             'The date (YYYYMMDD) to use for the log file\nDefaults to yesterday.'
       option ["-p", "--pattern"],
              "PATTERN",
              "The glob pattern for matching files\n",
@@ -28,13 +25,31 @@ module Rubber
              "The number of days to keep rotated files\n",
              :default => 7,
              &Proc.new {|a| Integer(a)}
-      option ['-t', '--timestamp'],
+      option ['-t', '--today'],
+             'TODAY',
+             'Specify to use today\'s date as the rotated date\nDefaults to FALSE.',
+             default: false
+      option ['-u', '--unique'],
              :flag,
-             'TIMESTAMP',
-             'Use the current timestamp to ensure uniqueness in the rotated name'
+             'UNIQUE',
+             'Use the current timestamp to ensure uniqueness in the rotated name',
+             default: false
+      option ['-y', '--yesterday'],
+             :flag,
+             'YESTERDAY',
+             'Specify to use yesterday\'s date as the rotated date\nDefaults to TRUE.',
+             default: true
 
-      def default_date
-        (Date.today - 1).strftime('%Y%m%d')
+      def date
+        rotated_date = Date.today
+        if !today?
+          rotated_date = rotated_date - 1
+        end
+        if unique?
+          "#{rotated_date.strftime('%Y%m%d')}-#{Time.now.to_i}"
+        else
+          rotated_date.strftime('%Y%m%d')
+        end
       end
 
       def execute
@@ -44,11 +59,7 @@ module Rubber
         log_file_glob = pattern
         log_file_age = age
 
-        rotated_date = if timestamp?
-          "#{date}-#{Time.now.to_i}"
-        else
-          date
-        end
+        rotated_date = date
 
         puts "Rotating logfiles located at: #{log_src_dir}/#{log_file_glob}"
         Dir["#{log_src_dir}/#{log_file_glob}"].each do |logfile|
