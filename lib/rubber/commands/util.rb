@@ -26,17 +26,15 @@ module Rubber
              :default => 7,
              &Proc.new {|a| Integer(a)}
       option ['-t', '--today'],
-             'TODAY',
+             :flag,
              'Specify to use today\'s date as the rotated date\nDefaults to FALSE.',
              default: false
       option ['-u', '--unique'],
              :flag,
-             'UNIQUE',
              'Use the current timestamp to ensure uniqueness in the rotated name',
-             default: false
+             default: true
       option ['-y', '--yesterday'],
              :flag,
-             'YESTERDAY',
              'Specify to use yesterday\'s date as the rotated date\nDefaults to TRUE.',
              default: true
 
